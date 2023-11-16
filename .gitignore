@@ -2,6 +2,5 @@
 logging/
 *.log
 
-# cache files
-packages/__pycache__/
-*.pyc
+# pycache
+**/__pycache__/
