@@ -1,3 +1,7 @@
 # all the log files
 logging/
 *.log
+
+# cache files
+./packages/__pycache__/
+*.pyc
