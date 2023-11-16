@@ -7,10 +7,10 @@ class RandomForest():
     def __init__(self, data):
         self.data = data
         self.model = BalancedRandomForestClassifier(random_state=42)
+        self.excluded_feature_indices = [0, 30, 31, 32, 33]
 
-    def select_features(self):
-        excluded_feature_indices = [0, 30, 31, 32, 33]
-        data = self.data.drop(self.data.columns[excluded_feature_indices], axis=1)
+    def select_features(self, data, excluded_feature_indices):
+        data = data.drop(data.columns[excluded_feature_indices], axis=1)
         return data
     
     def overSampling(self, data_x, data_y):
@@ -29,12 +29,12 @@ class RandomForest():
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
         
-        train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
+        # train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
 
     def data_processing(self):
-        data = self.select_features()
+        data = self.select_features(self.data, self.excluded_feature_indices)
         train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data = self.train_test_data_set_up(data)
         
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
