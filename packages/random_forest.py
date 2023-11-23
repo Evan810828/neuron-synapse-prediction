@@ -28,10 +28,24 @@ class RandomForest():
 
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
+
+        # train_data_x.drop(train_data_x.columns[[12, 9, 20, 10, 22, 29, 19, 18]], axis=1, inplace=True)
+        # test_data_x.drop(test_data_x.columns[[12, 9, 20, 10, 22, 29, 19, 18]], axis=1, inplace=True)
         
-        # train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
+
+    def feature_importance(self, data_x):
+        feature_importance = self.model.feature_importances_
+        feature_importance_index = sorted(range(len(feature_importance)), key=lambda k: feature_importance[k], reverse=True)
+        print('Feature Importance Index:', feature_importance_index)
+
+        for i in feature_importance_index:
+            # Format the coefficient to two decimal places
+            formatted_feature_importance = "{:.4f}".format(feature_importance[i])
+            print(data_x.columns[i], formatted_feature_importance)
+
+        return feature_importance_index
 
     def data_processing(self):
         data = self.select_features(self.data, self.excluded_feature_indices)
