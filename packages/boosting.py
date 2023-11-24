@@ -1,20 +1,18 @@
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from xgboost import XGBClassifier
 
-class Ensemble():
+class Boosting():
     def __init__(self, data):
         self.data = data
 
-        log_clf = LogisticRegression(random_state=520)
-        rnd_clf = RandomForestClassifier(random_state=520)
-        svm_clf = SVC(random_state=520,probability=True)
-
-        self.model = VotingClassifier(estimators=[('lr', log_clf), ('rf', rnd_clf),
-                                                ('svc', svm_clf)],
-                                    voting='soft')
+        self.model = XGBClassifier(booster = "gbtree", 
+                                   objective ='binary:logistic',
+                                   colsample_bytree = 0.53, 
+                                   learning_rate = 0.09,
+                                    max_depth = 5, 
+                                    alpha = 20, 
+                                    n_estimators = 100)
         self.excluded_feature_indices = [0, 30, 31, 32, 33]
 
     def select_features(self, data, excluded_feature_indices):
@@ -37,7 +35,7 @@ class Ensemble():
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
         
-        # train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
+        train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
 

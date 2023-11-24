@@ -8,7 +8,13 @@ class Bagging():
     def __init__(self, data):
         self.data = data
 
-        self.model = BaggingClassifier(DecisionTreeClassifier(), n_estimators=500 ,random_state=520)
+        self.model = BaggingClassifier(DecisionTreeClassifier(), 
+                                       n_estimators=500,
+                                       max_samples=100,
+                                        bootstrap=True,
+                                        max_features=1.0,
+                                        n_jobs=-1,
+                                       random_state=520)
         self.excluded_feature_indices = [0, 30, 31, 32, 33]
 
     def select_features(self, data, excluded_feature_indices):

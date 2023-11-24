@@ -5,7 +5,7 @@ from sklearn.linear_model import LogisticRegression
 class Logistic():
     def __init__(self, data):
         self.data = data
-        self.model = LogisticRegression(random_state=2)
+        self.model = LogisticRegression(random_state=2, class_weight='balanced')
         self.excluded_feature_indices = [0, 30, 31, 32, 33]
 
     def select_features(self, data, excluded_feature_indices):
@@ -28,7 +28,7 @@ class Logistic():
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
         
-        train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
+        # train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
 
