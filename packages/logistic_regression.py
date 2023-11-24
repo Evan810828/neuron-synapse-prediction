@@ -27,10 +27,29 @@ class Logistic():
 
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
+
+        # train_data_x.drop(train_data_x.columns[[18, 13, 21, 10, 12, 9, 14, 22, 15, 11, 25]], axis=1, inplace=True)
+        # test_data_x.drop(test_data_x.columns[[18, 13, 21, 10, 12, 9, 14, 22, 15, 11, 25]], axis=1, inplace=True)
         
         # train_data_x, train_data_y = self.overSampling(train_data_x, train_data_y)
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
+
+    ## print the ranked model coeffients by abosulute value with corresponding feature names and also the indexes of these coeffients in descending order
+    def coeffient_show(self, data_x):
+        coeffient = self.model.coef_[0]
+        coeffient_abs = [abs(number) for number in coeffient]
+        coeffient_index = sorted(range(len(coeffient)), key=lambda k: coeffient_abs[k], reverse=True)
+        print('Coefficient Index:', coeffient_index)
+
+        for i in coeffient_index:
+            # Format the coefficient to two decimal places
+            formatted_coefficient = "{:.2f}".format(coeffient[i])
+            print(data_x.columns[i], formatted_coefficient)
+
+        return coeffient_index  
+        
+
 
     def data_processing(self):
         data = self.select_features(self.data, self.excluded_feature_indices)
