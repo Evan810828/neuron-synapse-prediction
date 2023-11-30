@@ -8,7 +8,8 @@ class RandomForest():
     def __init__(self, data):
         self.data = data
         self.model = BalancedRandomForestClassifier(random_state=42)
-        self.excluded_feature_indices = [0, 30, 31, 32, 33]
+        # self.excluded_feature_indices = [0, 30, 31, 32, 33]
+        self.excluded_feature_indices = [0, 30, 31, 32, 33, 35, 20, 19]
 
     def select_features(self, data, excluded_feature_indices):
         data = data.drop(data.columns[excluded_feature_indices], axis=1)
@@ -29,10 +30,6 @@ class RandomForest():
 
         test_data_x = test_data.drop(label_column, axis=1)
         test_data_y = test_data[label_column]
-
-        # train_data_x.drop(train_data_x.columns[[12, 9, 20, 10, 22, 29, 19, 18]], axis=1, inplace=True)
-        # test_data_x.drop(test_data_x.columns[[12, 9, 20, 10, 22, 29, 19, 18]], axis=1, inplace=True)
-        
 
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
 
