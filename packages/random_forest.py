@@ -74,7 +74,7 @@ class RandomForestParameterSearch:
         self.min_samples_split_range = min_samples_split_range or [2, 4, 6]
         self.min_samples_leaf_range = min_samples_leaf_range or [1, 2, 3]
 
-        self.pipe = Pipeline([("scaler", StandardScaler()), ("model", RandomForestClassifier())])
+        self.pipe = Pipeline([("scaler", StandardScaler()), ("model", BalancedRandomForestClassifier())])
         self.all_performances = []
 
     def search_parameters(self, train_data_x, train_data_y, test_data_x, test_data_y):
@@ -94,7 +94,7 @@ class RandomForestParameterSearch:
                         self.pipe.set_params(**params)
                         self.pipe.fit(train_data_x, train_data_y)
                         predictions = self.pipe.predict(test_data_x)
-                        score = balanced_accuracy_score(test_data_y, predictions)
+                        score = balanced_accuracy_score(test_data_y, predictions > 0.5)
 
                         self.all_performances.append({'params': params, 'score': score})
                         print("Parameters: ", params, "Score: ", score)
