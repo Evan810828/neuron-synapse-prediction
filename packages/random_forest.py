@@ -8,7 +8,8 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score, confusion_m
 class RandomForest():
     def __init__(self, data):
         self.data = data
-        self.model = BalancedRandomForestClassifier(random_state=42, max_depth=25, n_estimators= 150)
+        # self.model = BalancedRandomForestClassifier(random_state=42, max_depth=25, n_estimators= 150)
+        self.model = BalancedRandomForestClassifier()
         # self.excluded_feature_indices = [0, 30, 31, 32, 33]
         self.excluded_feature_indices = [0, 30, 31, 32, 33, 35, 20, 19]
 
@@ -50,7 +51,7 @@ class RandomForest():
         data = self.select_features(self.data, self.excluded_feature_indices)
         train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data = self.train_test_data_set_up(data)
         
-        return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
+        return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data, data
     
     def hyperparamter_tuning(self):
         train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data = self.data_processing()
