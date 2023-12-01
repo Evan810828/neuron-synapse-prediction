@@ -3,11 +3,12 @@ from sklearn.model_selection import train_test_split
 
 from imblearn.ensemble import BalancedRandomForestClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import balanced_accuracy_score, accuracy_score, confusion_matrix
 
 class RandomForest():
     def __init__(self, data):
         self.data = data
-        self.model = BalancedRandomForestClassifier(random_state=42)
+        self.model = BalancedRandomForestClassifier(random_state=42, max_depth=25, n_estimators= 150)
         # self.excluded_feature_indices = [0, 30, 31, 32, 33]
         self.excluded_feature_indices = [0, 30, 31, 32, 33, 35, 20, 19]
 
@@ -50,3 +51,67 @@ class RandomForest():
         train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data = self.train_test_data_set_up(data)
         
         return train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data
+    
+    def hyperparamter_tuning(self):
+        train_data_x, train_data_y, test_data_x, test_data_y, train_data, test_data = self.data_processing()
+        rf_search = RandomForestParameterSearch()
+        rf_model = rf_search.search_parameters(train_data_x, train_data_y, test_data_x, test_data_y)
+        all_performances = rf_search.get_all_performances()
+
+        return rf_model, all_performances
+    
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+class RandomForestParameterSearch:
+    def __init__(self, n_estimators_range=None, max_depth_range=None, 
+                 min_samples_split_range=None, min_samples_leaf_range=None):
+        self.n_estimators_range = n_estimators_range or [100, 150, 300]
+        self.max_depth_range = max_depth_range or [23, 25, 27, 30]
+        self.min_samples_split_range = min_samples_split_range or [2, 4, 6]
+        self.min_samples_leaf_range = min_samples_leaf_range or [1, 2, 3]
+
+        self.pipe = Pipeline([("scaler", StandardScaler()), ("model", RandomForestClassifier())])
+        self.all_performances = []
+
+    def search_parameters(self, train_data_x, train_data_y, test_data_x, test_data_y):
+        best_score = 0
+        best_params = {}
+
+        for n_estimators in self.n_estimators_range:
+            for max_depth in self.max_depth_range:
+                for min_samples_split in self.min_samples_split_range:
+                    for min_samples_leaf in self.min_samples_leaf_range:
+                        params = {
+                            "model__n_estimators": n_estimators,
+                            "model__max_depth": max_depth,
+                            "model__min_samples_split": min_samples_split,
+                            "model__min_samples_leaf": min_samples_leaf
+                        }
+                        self.pipe.set_params(**params)
+                        self.pipe.fit(train_data_x, train_data_y)
+                        predictions = self.pipe.predict(test_data_x)
+                        score = balanced_accuracy_score(test_data_y, predictions)
+
+                        self.all_performances.append({'params': params, 'score': score})
+                        print("Parameters: ", params, "Score: ", score)
+                        if score > best_score:
+                            best_score = score
+                            best_params = params
+
+        print("Best score: ", best_score)
+        print("Best parameters: ", best_params)
+        self.pipe.set_params(**best_params)
+
+        return self.pipe
+
+    def get_all_performances(self):
+        return self.all_performances
+
+# Usage Example:
+# rf_search = RandomForestParameterSearch()
+# rf_model = rf_search.search_parameters(train_data_x, train_data_y, test_data_x, test_data_y)
+# all_performances = rf_search.get_all_performances()
